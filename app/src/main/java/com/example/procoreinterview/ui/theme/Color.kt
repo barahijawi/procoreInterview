@@ -1,4 +1,4 @@
-package com.example.authmoduleyt.ui.theme
+package com.example.procoreinterview.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
