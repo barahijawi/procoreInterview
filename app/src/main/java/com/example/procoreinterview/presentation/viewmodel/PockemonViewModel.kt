@@ -28,7 +28,6 @@ sealed class PockemonUiState
 @HiltViewModel
 class PockemonViewModel @Inject constructor(
     private val getPockemonCardUseCase: GetPockemonCardUseCase,
-    private val repository: PockemonRepository
 ) : ViewModel()
 {
 
@@ -86,7 +85,7 @@ class PockemonViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _pockemonUiState.value = PockemonUiState.Loading
-                val sortedCards = repository.getPockemonCardsSortedByHp()
+                val sortedCards = getPockemonCardUseCase.getPockemonCardsSortedByHp()
                 _pockemonUiState.value = PockemonUiState.Success(sortedCards)
             } catch (e: Exception) {
                 _pockemonUiState.value = PockemonUiState.Error("Failed to sort by HP")
@@ -97,7 +96,7 @@ class PockemonViewModel @Inject constructor(
     fun fetchPockemonCards()
     {
         val currentState = _pockemonUiState.value
-        Log.d("pageNumber", "fetchPockemonCards: $currentPage")
+//        Log.d("pageNumber", "fetchPockemonCards: $currentPage")
         if (currentState is PockemonUiState.Loading && currentPage != 1) return // Avoid multiple simultaneous loads
 
         viewModelScope.launch {
@@ -111,7 +110,7 @@ class PockemonViewModel @Inject constructor(
 //            _pockemonUiState.value = PockemonUiState.Loading
             val newCards = getPockemonCardUseCase(currentPage, pageSize) // Fetch paginated data
 
-            Log.d("pageNumber", "newCards.size: ${newCards.size}")
+//            Log.d("pageNumber", "newCards.size: ${newCards.size}")
             if (currentState is PockemonUiState.Success)
             {
 

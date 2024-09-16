@@ -15,4 +15,8 @@ class GetPockemonCardUseCase @Inject constructor(
     suspend fun getCardsCount():Int {
       return  respository.getCardCount()
     }
+
+    suspend fun getPockemonCardsSortedByHp():List<PockemonCard>{
+        return respository.getPockemonCardsSortedByHp()
+    }
 }

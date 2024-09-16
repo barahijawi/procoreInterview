@@ -2,6 +2,7 @@ package com.example.procoreinterview.viewmodel
 
 import com.example.procoreinterview.domain.GetPockemonCardUseCase
 import com.example.procoreinterview.domain.PockemonCard
+import com.example.procoreinterview.presentation.viewmodel.PockemonUiState
 import com.example.procoreinterview.presentation.viewmodel.PockemonViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -10,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -23,22 +25,22 @@ class PockemonViewModelTest {
 
     @Before
     fun setUp() {
-        // Set the main dispatcher to the test dispatcher
         Dispatchers.setMain(testDispatcher)
 
         getPockemonCardUseCase = mockk()
 
-        // Mock the suspending function
-        coEvery { getPockemonCardUseCase() } returns listOf(
+        // Mock both methods of the use case
+        coEvery { getPockemonCardUseCase(any(), any()) } returns listOf(
             PockemonCard(id = "1", name = "Pikachu", hp = "100", imageUrl = "some_url")
         )
+
+        coEvery { getPockemonCardUseCase.getCardsCount() } returns 100
 
         viewModel = PockemonViewModel(getPockemonCardUseCase)
     }
 
     @After
     fun tearDown() {
-        // Reset the main dispatcher to its original state
         Dispatchers.resetMain()
     }
 
@@ -50,10 +52,12 @@ class PockemonViewModelTest {
         // Move time forward for the coroutine to complete
         advanceUntilIdle()
 
-        // Assert the state is updated
-        assertEquals(
-            listOf(PockemonCard(id = "1", name = "Pikachu", hp = "100", imageUrl = "some_url")),
-            viewModel.pockemonCards.value
-        )
+        println(viewModel.pockemonUiState.value)
+
+        // Assert the state is updated to success
+        assertTrue(viewModel.pockemonUiState.value is PockemonUiState.Success)
+        val fetchedData = (viewModel.pockemonUiState.value as PockemonUiState.Success).data
+        assertEquals(1, fetchedData.size)
+        assertEquals("Pikachu", fetchedData[0].name)
     }
 }
