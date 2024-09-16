@@ -15,4 +15,10 @@ interface PockemonCardDao {
 
     @Query("SELECT COUNT(id) from pokemon_cards")
      fun getCount() : Int
+
+    @Query("SELECT * FROM pokemon_cards ORDER BY hp ASC")
+    suspend fun getAllSortedByHp(): List<PockemonCardEntity>
+
+//    @Query("SELECT * FROM pokemon_cards ORDER BY type ASC")
+//    suspend fun getAllSortedByType(): List<PockemonCardEntity>
 }

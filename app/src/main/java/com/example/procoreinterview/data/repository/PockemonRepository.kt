@@ -5,4 +5,5 @@ import com.example.procoreinterview.domain.PockemonCard
 interface  PockemonRepository{
     suspend fun getPockemonCards(page: Int, pageSize: Int):List<PockemonCard>
     suspend fun getCardCount(): Int
+    suspend fun getPockemonCardsSortedByHp(): List<PockemonCard>
 }

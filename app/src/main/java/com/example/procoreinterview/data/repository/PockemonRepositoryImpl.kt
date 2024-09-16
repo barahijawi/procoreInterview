@@ -74,4 +74,16 @@ class PockemonRepositoryImpl @Inject constructor(
         return pockemonCardDao.getCount()
     }
 
+    // Fetch cards sorted by HP from the database
+    override suspend fun getPockemonCardsSortedByHp(): List<PockemonCard> {
+        return pockemonCardDao.getAllSortedByHp().map { entity ->
+            PockemonCard(
+                id = entity.id,
+                name = entity.name,
+                hp = entity.hp,
+                imageUrl = entity.imageUrl
+            )
+        }
+    }
+
 }

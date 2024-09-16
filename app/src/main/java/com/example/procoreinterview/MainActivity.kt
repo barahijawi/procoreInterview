@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.toArgb
 import com.example.procoreinterview.presentation.screens.PockemonListScreen
 import com.example.procoreinterview.ui.theme.ProcoreTheme
 import com.example.procoreinterview.ui.theme.gray
+import com.example.procoreinterview.util.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,7 +19,8 @@ class MainActivity : ComponentActivity() {
         window.setTitle("Pockemon App")
         setContent {
             ProcoreTheme {
-                PockemonListScreen()
+//                PockemonListScreen()
+                Navigation()
             }
         }
     }

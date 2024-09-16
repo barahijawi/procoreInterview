@@ -3,6 +3,7 @@ package com.example.procoreinterview.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.procoreinterview.data.repository.PockemonRepository
 import com.example.procoreinterview.domain.GetPockemonCardUseCase
 import com.example.procoreinterview.domain.PockemonCard
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +27,8 @@ sealed class PockemonUiState
 
 @HiltViewModel
 class PockemonViewModel @Inject constructor(
-    private val getPockemonCardUseCase: GetPockemonCardUseCase
+    private val getPockemonCardUseCase: GetPockemonCardUseCase,
+    private val repository: PockemonRepository
 ) : ViewModel()
 {
 
@@ -59,11 +61,38 @@ class PockemonViewModel @Inject constructor(
 //        }
 //    }
 
+    //NO DB
     fun sortByHp(cards: List<PockemonCard>): List<PockemonCard>
     {
         return cards.sortedBy { it.hp.toIntOrNull() ?: 0 }
     }
 
+    // No DB Function to handle sorting by HP or Type
+    fun sortBy(criteria: String) {
+        val currentState = _pockemonUiState.value
+        if (currentState is PockemonUiState.Success) {
+            val sortedCards = when (criteria) {
+                "hp" -> currentState.data.sortedBy { it.hp.toIntOrNull() ?: 0 } // Sort by HP
+//                "type" -> currentState.data.sortedBy { it. } // Sort by Type
+                else -> currentState.data
+            }
+            _pockemonUiState.value = PockemonUiState.Success(sortedCards)
+        }
+    }
+
+    //DB SORT
+    // Sort by HP
+    fun sortByHp() {
+        viewModelScope.launch {
+            try {
+                _pockemonUiState.value = PockemonUiState.Loading
+                val sortedCards = repository.getPockemonCardsSortedByHp()
+                _pockemonUiState.value = PockemonUiState.Success(sortedCards)
+            } catch (e: Exception) {
+                _pockemonUiState.value = PockemonUiState.Error("Failed to sort by HP")
+            }
+        }
+    }
 
     fun fetchPockemonCards()
     {

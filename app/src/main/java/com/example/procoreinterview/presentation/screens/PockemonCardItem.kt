@@ -2,6 +2,7 @@ package com.example.procoreinterview.presentation.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.procoreinterview.domain.PockemonCard
 
 @Composable
-fun PockemonCardItem(card: PockemonCard) {
+fun PockemonCardItem(card: PockemonCard,onClick: () -> Unit) {
     var imageLoaded by remember { mutableStateOf(false) }
     val alpha by animateFloatAsState(if (imageLoaded) 1f else 0f)
 
@@ -32,8 +33,10 @@ fun PockemonCardItem(card: PockemonCard) {
         modifier = Modifier
             .fillMaxWidth()
             .height(130.dp)
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable(onClick = onClick),
         elevation = 8.dp
+
     ) {
         Image(
             painter = rememberAsyncImagePainter(
