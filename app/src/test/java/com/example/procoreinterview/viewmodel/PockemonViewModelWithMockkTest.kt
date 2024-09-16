@@ -19,12 +19,13 @@ import org.junit.Test
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class PockemonViewModelWithMockkTest {
-
 
     private lateinit var viewModel: PockemonViewModel
     private lateinit var mockRepository: PockemonRepository
@@ -49,8 +50,7 @@ class PockemonViewModelWithMockkTest {
             getPockemonCardUseCase,
             getCachedPokemonCardUseCase,
             savePockemonCardsUseCase,
-            getMinMaxHpUseCase,
-
+            getMinMaxHpUseCase
         )
     }
 
@@ -60,16 +60,23 @@ class PockemonViewModelWithMockkTest {
         val mockCards = listOf(
             PockemonCard(id = "1", name = "Pikachu", hp = "50", imageUrlSmall = "", imageUrlLarge = "", superType = "",
                          types = emptyList(), subTypes = emptyList()),
-            PockemonCard(id = "2", name = "Charizard", hp = "100", imageUrlSmall = "", imageUrlLarge = "", superType =
-            "", types = emptyList(), subTypes = emptyList())
+            PockemonCard(id = "2", name = "Charizard", hp = "100", imageUrlSmall = "", imageUrlLarge = "", superType = "",
+                         types = emptyList(), subTypes = emptyList())
         )
 
-        // Mock the repository's behavior
+        // Mock the behavior for fetching from the network and saving to DB
         coEvery { getPockemonCardUseCase() } returns mockCards
         coEvery { savePockemonCardsUseCase(any()) } returns Unit
 
-        // When: The ViewModel loads the cards
+        // Mock the cached cards retrieval
+        val mockCachedCardsFlow = MutableStateFlow(mockCards)
+        coEvery { getCachedPokemonCardUseCase() } returns mockCachedCardsFlow
+
+        // When: The ViewModel loads the cards (network fetch)
         viewModel.loadPockemonCards(isNetworkAvailable = true)
+
+        // Make sure to advance the coroutine until all tasks are finished
+        advanceUntilIdle()
 
         // Then: Verify that the ViewModel holds the mocked data
         val cards = viewModel.pockemonCards.first()
