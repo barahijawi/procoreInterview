@@ -23,7 +23,7 @@ class PockemonViewModel @Inject constructor(
         fetchPockemonCards()
     }
 
-    private fun fetchPockemonCards(){
+     fun fetchPockemonCards(){
         viewModelScope.launch {
             val cards = getPockemonCardUseCase()
             _pockemonCard.value = cards
